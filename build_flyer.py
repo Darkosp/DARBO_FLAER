@@ -21,6 +21,7 @@ GREEN_LITE = "4E9E71"   # изведена, за текст на темно
 RED        = "D23A2A"   # --color-group
 LINE       = "E2D9C7"   # hairline на хартија
 FONT       = "Arial"
+LOGO_FONT  = "Michroma"   # замена за логото: BankGothic Md BT → Michroma (како на darbo.mk)
 
 W, H = 21.0, 29.7          # A4 portrait, cm
 ML   = 1.30                # left margin
@@ -227,11 +228,11 @@ def build(c, slide):
     bg.solid(); bg.fore_color.rgb = rgb(PAPER)
 
     # ── header ────────────────────────────────────────────────────────────────
-    tb(slide, ML, 0.52, 12.0, 1.00,
-       [{"runs": [("DARBO", {"sz": 22, "b": True, "c": GREEN, "spc": 1.0}),
-                  ("  GROUP", {"sz": 22, "b": True, "c": RED, "spc": 1.0})]}],
+    tb(slide, ML, 0.44, 12.6, 1.10,
+       [{"runs": [("DARBO", {"sz": 19, "c": GREEN, "spc": 0.3, "font": LOGO_FONT}),
+                  ("   GROUP", {"sz": 19, "c": RED, "spc": 0.3, "font": LOGO_FONT})]}],
        MSO_ANCHOR.MIDDLE)
-    tb(slide, ML, 1.44, 12.6, 0.50,
+    tb(slide, ML, 1.54, 12.6, 0.50,
        [{"runs": [(c["head_sub"], {"sz": 8.2, "c": INK_SOFT, "spc": 0.2})]}])
     tb(slide, 11.60, 0.56, 8.10, 0.45,
        [{"runs": [(c["lic_top"], {"sz": 9.5, "b": True, "c": GREEN_DARK, "spc": 0.5})],

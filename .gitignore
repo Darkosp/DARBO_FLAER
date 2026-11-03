@@ -4,7 +4,11 @@ CLEAN.jpg
 # Локални прегледи од рендерирање
 preview/
 
+# Симнати фонтови (Michroma) — локални, за рендерирање
+assets/fonts/
+
 # Office / OS ѓубре
+.~lock.*
 ~$*
 *.tmp
 Thumbs.db
