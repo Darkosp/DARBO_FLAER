@@ -100,7 +100,7 @@ MK = dict(
     lic_top="ЛИЦЕНЦА  Уп.0812/3",
     lic_sub="Регулаторна комисија за домување  ·  важи до 10.03.2028",
     kicker="УПРАВУВАЊЕ СО СТАНБЕНИ ЗГРАДИ",
-    headline=["Колку реално чини вашата зграда", "на крајот на месецот?"],
+    headline=["Колку реално чини управувањето", "на вашата зграда на крајот на месецот?"],
     sub="Една цена за управување, чистење и техничко одржување. "
         "Сите останати ставки ги гледате однапред — ставка по ставка, секој месец.",
     big="500 ден.",
@@ -163,7 +163,7 @@ AL = dict(
     lic_top="LICENCA  Up.0812/3",
     lic_sub="Komisioni Rregullator për Banesa  ·  e vlefshme deri 10.03.2028",
     kicker="MENAXHIM I NDËRTESAVE BANESORE",
-    headline=["Sa kushton realisht ndërtesa juaj", "në fund të muajit?"],
+    headline=["Sa kushton realisht menaxhimi", "i ndërtesës tuaj në fund të muajit?"],
     sub="Një çmim për menaxhim, pastrim dhe mirëmbajtje teknike. "
         "Të gjitha zërat e tjerë i shihni paraprakisht — zë për zë, çdo muaj.",
     big="500 den.",
