@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""DARBO GRUP — A4 flyer (MK / AL), 2 pages."""
+"""DARBO GRUP — A4 flyer (MK / AL), 2 pages, brand palette from darbo.mk."""
 from pptx import Presentation
 from pptx.util import Cm, Pt
 from pptx.dml.color import RGBColor
@@ -7,13 +7,20 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.oxml.ns import qn
 
-INK    = "1E2529"
-ACCENT = "C97B2A"
-LIGHT  = "F2F3F4"
-MID    = "6E767B"
-DIM    = "D8DCDE"
-WHITE  = "FFFFFF"
-FONT   = "Arial"
+# ── бренд палета (дизајн-токени од darbo.mk CSS) ───────────────────────────────
+PAPER      = "F6F3EC"   # --color-paper
+CARD       = "FFFFFF"   # --color-paper-2
+CREAM      = "EFE9DD"   # --color-cream
+INK        = "1C1813"   # --color-ink
+INK_SOFT   = "5D564D"   # --color-ink-soft
+INK_FAINT  = "6E6960"   # --color-ink-faint
+GREEN      = "1A7A47"   # --color-darbo / --color-accent
+GREEN_DARK = "135C36"   # --color-accent-ink
+GREEN_TINT = "E7F1EA"   # --color-accent-tint
+GREEN_LITE = "4E9E71"   # изведена, за текст на темно
+RED        = "D23A2A"   # --color-group
+LINE       = "E2D9C7"   # hairline на хартија
+FONT       = "Arial"
 
 W, H = 21.0, 29.7          # A4 portrait, cm
 ML   = 1.30                # left margin
@@ -39,7 +46,6 @@ def rect(slide, x, y, w, h, fill=None, line=None, lw=0.6):
 
 
 def tb(slide, x, y, w, h, paras, anchor=MSO_ANCHOR.TOP, wrap=True):
-    """paras: list of dicts {runs:[(text, dict(...))], align, sa, sb, ls}"""
     box = slide.shapes.add_textbox(Cm(x), Cm(y), Cm(w), Cm(h))
     tf = box.text_frame
     tf.word_wrap = wrap
@@ -63,6 +69,8 @@ def tb(slide, x, y, w, h, paras, anchor=MSO_ANCHOR.TOP, wrap=True):
             f.bold = st.get("b", False)
             f.italic = st.get("i", False)
             f.color.rgb = rgb(st.get("c", INK))
+            if st.get("spc"):
+                r._r.get_or_add_rPr().set("spc", str(int(st["spc"] * 100)))
     return box
 
 
@@ -123,10 +131,10 @@ MK = dict(
     ],
     total=("ВКУПНО МЕСЕЧНО", "817 ден."),
     stats=[
-        ("100+", "згради под\nуправување"),
+        ("100+", "згради под управување"),
         ("2.500+", "домаќинства"),
-        ("13", "години на\nпазарот"),
-        ("15+", "вработени,\nсопствени тимови"),
+        ("13", "години на пазарот"),
+        ("15+", "вработени, сопствени тимови"),
     ],
     chk_title="ПРАШАЈТЕ ЈА СЕКОЈА ПОНУДА — ПЕТ ПРАШАЊА",
     chk=[
@@ -186,10 +194,10 @@ AL = dict(
     ],
     total=("TOTALI MUJOR", "817 den."),
     stats=[
-        ("100+", "ndërtesa nën\nmenaxhim"),
+        ("100+", "ndërtesa nën menaxhim"),
         ("2.500+", "familje"),
-        ("13", "vjet në\ntreg"),
-        ("15+", "të punësuar,\nekipe të vetat"),
+        ("13", "vjet në treg"),
+        ("15+", "të punësuar, ekipe të vetat"),
     ],
     chk_title="PYESNI ÇDO OFERTË — PESË PYETJE",
     chk=[
@@ -214,43 +222,47 @@ AL = dict(
 
 
 def build(c, slide):
-    ink, acc, mid, dim, white = INK, ACCENT, MID, DIM, WHITE
+    # bg
+    bg = slide.background.fill
+    bg.solid(); bg.fore_color.rgb = rgb(PAPER)
 
-    # ── header band ───────────────────────────────────────────────────────────
-    rect(slide, 0, 0, W, 2.10, ink)
-    tb(slide, ML, 0.40, 10.0, 1.00,
-       [{"runs": [("DARBO GRUP", {"sz": 21, "b": True, "c": white})]}], MSO_ANCHOR.MIDDLE)
-    tb(slide, ML, 1.36, 12.0, 0.50,
-       [{"runs": [(c["head_sub"], {"sz": 8.2, "c": dim})]}])
-    tb(slide, 11.60, 0.52, 8.10, 0.45,
-       [{"runs": [(c["lic_top"], {"sz": 9.5, "b": True, "c": acc})], "align": PP_ALIGN.RIGHT}])
-    tb(slide, 10.20, 1.02, 9.50, 0.45,
-       [{"runs": [(c["lic_sub"], {"sz": 7.1, "c": dim})], "align": PP_ALIGN.RIGHT}])
-    rect(slide, 0, 2.10, W, 0.16, acc)
+    # ── header ────────────────────────────────────────────────────────────────
+    tb(slide, ML, 0.52, 12.0, 1.00,
+       [{"runs": [("DARBO", {"sz": 22, "b": True, "c": GREEN, "spc": 1.0}),
+                  ("  GROUP", {"sz": 22, "b": True, "c": RED, "spc": 1.0})]}],
+       MSO_ANCHOR.MIDDLE)
+    tb(slide, ML, 1.44, 12.6, 0.50,
+       [{"runs": [(c["head_sub"], {"sz": 8.2, "c": INK_SOFT, "spc": 0.2})]}])
+    tb(slide, 11.60, 0.56, 8.10, 0.45,
+       [{"runs": [(c["lic_top"], {"sz": 9.5, "b": True, "c": GREEN_DARK, "spc": 0.5})],
+         "align": PP_ALIGN.RIGHT}])
+    tb(slide, 10.20, 1.06, 9.50, 0.45,
+       [{"runs": [(c["lic_sub"], {"sz": 7.1, "c": INK_SOFT})], "align": PP_ALIGN.RIGHT}])
+    rect(slide, 0, 2.06, W, 0.14, GREEN)
 
     # ── headline ──────────────────────────────────────────────────────────────
     tb(slide, ML, 2.42, CW, 0.42,
-       [{"runs": [(c["kicker"], {"sz": 8.0, "b": True, "c": acc})]}])
+       [{"runs": [(c["kicker"], {"sz": 8.0, "b": True, "c": GREEN_DARK, "spc": 0.8})]}])
     tb(slide, ML, 2.76, 17.9, 1.64,
-       [{"runs": [(ln, {"sz": 21, "b": True, "c": ink})], "ls": 0.94} for ln in c["headline"]],
+       [{"runs": [(ln, {"sz": 21, "b": True, "c": INK})], "ls": 0.94} for ln in c["headline"]],
        MSO_ANCHOR.BOTTOM)
     tb(slide, ML, 4.52, 16.9, 0.95,
-       [{"runs": [(c["sub"], {"sz": 9.6, "c": mid})], "ls": 1.05}])
+       [{"runs": [(c["sub"], {"sz": 9.6, "c": INK_SOFT})], "ls": 1.05}])
 
     # ── hero price ────────────────────────────────────────────────────────────
     tb(slide, ML, 5.34, 7.9, 2.12,
-       [{"runs": [(c["big"], {"sz": 45, "b": True, "c": acc})]}], MSO_ANCHOR.MIDDLE)
-    rect(slide, 8.62, 5.72, 0.05, 1.36, "C9CDD0")
+       [{"runs": [(c["big"], {"sz": 45, "b": True, "c": GREEN})]}], MSO_ANCHOR.MIDDLE)
+    rect(slide, 8.62, 5.72, 0.05, 1.36, LINE)
     tb(slide, 9.00, 5.76, 6.0, 0.55,
-       [{"runs": [(c["unit"][0], {"sz": 12.8, "b": True, "c": ink})]}])
+       [{"runs": [(c["unit"][0], {"sz": 12.8, "b": True, "c": INK})]}])
     tb(slide, 9.00, 6.28, 6.0, 0.55,
-       [{"runs": [(c["unit"][1], {"sz": 12.8, "b": True, "c": mid})]}])
+       [{"runs": [(c["unit"][1], {"sz": 12.8, "b": True, "c": INK_SOFT})]}])
 
     # ── two columns ───────────────────────────────────────────────────────────
     tb(slide, ML, 7.86, 10.2, 0.42,
-       [{"runs": [(c["col1"], {"sz": 9.4, "b": True, "c": ink})]}])
+       [{"runs": [(c["col1"], {"sz": 9.4, "b": True, "c": GREEN_DARK, "spc": 0.4})]}])
     tb(slide, 11.85, 7.86, 7.85, 0.42,
-       [{"runs": [(c["col2"], {"sz": 9.4, "b": True, "c": ink})]}])
+       [{"runs": [(c["col2"], {"sz": 9.4, "b": True, "c": RED, "spc": 0.4})]}])
 
     box = slide.shapes.add_textbox(Cm(ML), Cm(8.40), Cm(10.15), Cm(5.90))
     tf = box.text_frame; tf.word_wrap = True
@@ -260,59 +272,62 @@ def build(c, slide):
         para.line_spacing = 1.0
         para.space_after = Pt(6)
         r = para.add_run(); r.text = item
-        r.font.name = FONT; r.font.size = Pt(8.9); r.font.color.rgb = rgb(ink)
-        bullet(para, "•", acc, 0.40)
+        r.font.name = FONT; r.font.size = Pt(8.9); r.font.color.rgb = rgb(INK)
+        bullet(para, "•", GREEN, 0.40)
 
     y = 8.40
     for title, expl in c["exc"]:
-        rect(slide, 11.85, y + 0.07, 0.13, 0.13, acc)
+        rect(slide, 11.85, y + 0.07, 0.13, 0.13, RED)
         tb(slide, 12.22, y, 7.48, 0.36,
-           [{"runs": [(title, {"sz": 8.8, "b": True, "c": ink})]}])
+           [{"runs": [(title, {"sz": 8.8, "b": True, "c": INK})]}])
         tb(slide, 12.22, y + 0.36, 7.48, 0.46,
-           [{"runs": [(expl, {"sz": 8.0, "c": mid})], "ls": 0.98}])
+           [{"runs": [(expl, {"sz": 8.0, "c": INK_SOFT})], "ls": 0.98}])
         y += 1.18
     tb(slide, 11.85, y + 0.02, 7.85, 0.78,
-       [{"runs": [(c["exc_note"], {"sz": 8.0, "b": True, "c": acc})], "ls": 1.05}])
+       [{"runs": [(c["exc_note"], {"sz": 8.0, "b": True, "c": GREEN_DARK})], "ls": 1.05}])
 
-    # ── example invoice ───────────────────────────────────────────────────────
+    # ── example invoice (white card) ──────────────────────────────────────────
     y0 = 14.42
     tb(slide, ML, y0, CW, 0.42,
-       [{"runs": [(c["ex_title"], {"sz": 9.2, "b": True, "c": ink})]}])
-    ry = y0 + 0.52
-    rh = 0.68
+       [{"runs": [(c["ex_title"], {"sz": 9.2, "b": True, "c": INK, "spc": 0.4})]}])
+    rh, th = 0.68, 0.86
+    card_top = y0 + 0.52
+    rect(slide, ML, card_top, CW, 4 * rh + th, CARD)
+    ry = card_top
     for i, (label, amount) in enumerate(c["rows"]):
-        if i % 2 == 0:
-            rect(slide, ML, ry, CW, rh, LIGHT)
+        if i:
+            rect(slide, ML + 0.28, ry, CW - 0.56, 0.02, LINE)
         tb(slide, ML + 0.28, ry, 13.9, rh,
-           [{"runs": [(label, {"sz": 8.9, "c": ink})]}], MSO_ANCHOR.MIDDLE)
+           [{"runs": [(label, {"sz": 8.9, "c": INK})]}], MSO_ANCHOR.MIDDLE)
         tb(slide, 14.30, ry, 5.10, rh,
-           [{"runs": [(amount, {"sz": 9.4, "b": True, "c": ink})], "align": PP_ALIGN.RIGHT}],
+           [{"runs": [(amount, {"sz": 9.4, "b": True, "c": INK})], "align": PP_ALIGN.RIGHT}],
            MSO_ANCHOR.MIDDLE)
         ry += rh
-    th = 0.86
-    rect(slide, ML, ry, CW, th, ink)
+    rect(slide, ML, ry, CW, th, GREEN)
     tb(slide, ML + 0.28, ry, 12.0, th,
-       [{"runs": [(c["total"][0], {"sz": 10.2, "b": True, "c": white})]}], MSO_ANCHOR.MIDDLE)
+       [{"runs": [(c["total"][0], {"sz": 10.2, "b": True, "c": CARD, "spc": 0.5})]}],
+       MSO_ANCHOR.MIDDLE)
     tb(slide, 12.60, ry, 6.80, th,
-       [{"runs": [(c["total"][1], {"sz": 14.5, "b": True, "c": acc})], "align": PP_ALIGN.RIGHT}],
+       [{"runs": [(c["total"][1], {"sz": 14.5, "b": True, "c": CARD})], "align": PP_ALIGN.RIGHT}],
        MSO_ANCHOR.MIDDLE)
     ry += th
 
     # ── stats strip ───────────────────────────────────────────────────────────
     sy = ry + 0.30
-    rect(slide, ML, sy, CW, 1.16, LIGHT)
+    rect(slide, ML, sy, CW, 1.16, GREEN_TINT)
     cw = CW / 4.0
     for i, (val, lab) in enumerate(c["stats"]):
         x = ML + i * cw
         tb(slide, x, sy + 0.13, cw, 0.52,
-           [{"runs": [(val, {"sz": 15.5, "b": True, "c": acc})], "align": PP_ALIGN.CENTER}])
+           [{"runs": [(val, {"sz": 15.5, "b": True, "c": GREEN_DARK})], "align": PP_ALIGN.CENTER}])
         tb(slide, x, sy + 0.66, cw, 0.44,
-           [{"runs": [(lab.replace("\n", " "), {"sz": 7.2, "c": mid})], "align": PP_ALIGN.CENTER}])
+           [{"runs": [(lab.replace("\n", " "), {"sz": 7.2, "c": INK_SOFT})],
+             "align": PP_ALIGN.CENTER}])
 
     # ── checklist ─────────────────────────────────────────────────────────────
     ky = sy + 1.50
     tb(slide, ML, ky, CW, 0.42,
-       [{"runs": [(c["chk_title"], {"sz": 9.0, "b": True, "c": ink})]}])
+       [{"runs": [(c["chk_title"], {"sz": 9.0, "b": True, "c": INK, "spc": 0.4})]}])
     box = slide.shapes.add_textbox(Cm(ML), Cm(ky + 0.50), Cm(CW), Cm(2.90))
     tf = box.text_frame; tf.word_wrap = True
     tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
@@ -322,37 +337,37 @@ def build(c, slide):
         para.space_after = Pt(4.8)
         rn = para.add_run(); rn.text = f"{i+1}."
         rn.font.name = FONT; rn.font.size = Pt(8.7); rn.font.bold = True
-        rn.font.color.rgb = rgb(acc)
+        rn.font.color.rgb = rgb(RED)
         rt = para.add_run(); rt.text = "  " + q
-        rt.font.name = FONT; rt.font.size = Pt(8.7); rt.font.color.rgb = rgb(ink)
+        rt.font.name = FONT; rt.font.size = Pt(8.7); rt.font.color.rgb = rgb(INK)
         hanging(para, 0.42)
 
     tb(slide, ML, ky + 3.06, CW, 0.55,
-       [{"runs": [(c["fine"], {"sz": 7.2, "i": True, "c": mid})], "ls": 1.0}])
+       [{"runs": [(c["fine"], {"sz": 7.2, "i": True, "c": INK_FAINT})], "ls": 1.0}])
 
     # ── CTA band ──────────────────────────────────────────────────────────────
     cy = 24.55
-    rect(slide, 0, cy, W, H - cy - 1.30, ink)
+    rect(slide, 0, cy, W, H - cy - 1.30, INK)
     tb(slide, ML, cy + 0.20, 9.9, 0.62,
-       [{"runs": [(c["cta1"], {"sz": 15, "b": True, "c": white})]}])
+       [{"runs": [(c["cta1"], {"sz": 15, "b": True, "c": PAPER})]}])
     tb(slide, ML, cy + 0.82, 9.9, 0.42,
-       [{"runs": [(c["cta2"], {"sz": 11.5, "b": True, "c": acc})]}])
+       [{"runs": [(c["cta2"], {"sz": 11.5, "b": True, "c": GREEN_LITE})]}])
     tb(slide, ML, cy + 1.30, 9.9, 0.44,
-       [{"runs": [(c["cta3"], {"sz": 8.2, "c": dim})], "ls": 1.0}])
+       [{"runs": [(c["cta3"], {"sz": 8.2, "c": CREAM})], "ls": 1.0}])
     tb(slide, ML, cy + 1.86, 9.9, 1.15,
-       [{"runs": [(c["contact"][0], {"sz": 8.6, "b": True, "c": white})], "sa": 4},
-        {"runs": [(c["contact"][1], {"sz": 9.8, "b": True, "c": white})], "sa": 4},
-        {"runs": [(c["contact"][2], {"sz": 8.4, "c": dim})]}])
+       [{"runs": [(c["contact"][0], {"sz": 8.6, "b": True, "c": PAPER})], "sa": 4},
+        {"runs": [(c["contact"][1], {"sz": 9.8, "b": True, "c": PAPER})], "sa": 4},
+        {"runs": [(c["contact"][2], {"sz": 8.4, "c": CREAM})]}])
     for (qx, img, cap) in ((13.30, "assets/qr-rkd.png", c["qr1"]),
                            (17.05, "assets/qr-pay.png", c["qr2"])):
-        rect(slide, qx, cy + 0.24, 2.40, 2.40, white)
+        rect(slide, qx, cy + 0.24, 2.40, 2.40, CARD)
         slide.shapes.add_picture(img, Cm(qx + 0.11), Cm(cy + 0.35), Cm(2.18), Cm(2.18))
         tb(slide, qx - 0.15, cy + 2.74, 2.70, 0.62,
-           [{"runs": [(cap, {"sz": 6.6, "c": dim})], "align": PP_ALIGN.CENTER, "ls": 1.0}])
+           [{"runs": [(cap, {"sz": 6.6, "c": CREAM})], "align": PP_ALIGN.CENTER, "ls": 1.0}])
 
     # ── footer ────────────────────────────────────────────────────────────────
     tb(slide, 0.80, H - 1.06, W - 1.60, 0.40,
-       [{"runs": [(c["footer"], {"sz": 6.8, "c": mid})], "align": PP_ALIGN.CENTER}])
+       [{"runs": [(c["footer"], {"sz": 6.8, "c": INK_FAINT})], "align": PP_ALIGN.CENTER}])
 
 
 def main():
